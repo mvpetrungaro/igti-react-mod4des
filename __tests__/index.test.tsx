@@ -6,9 +6,17 @@ describe('Home', () => {
     render(<Home />)
 
     const heading = screen.getByRole('heading', {
-      name: /welcome to next\.js!/i,
+      name: /IGTI React Module 4: Challenge/i,
     })
 
     expect(heading).toBeInTheDocument()
+  })
+
+  it('renders an input', () => {
+    render(<Home />)
+
+    const input = screen.getByPlaceholderText(/search/i)
+
+    expect(input).toBeInTheDocument()
   })
 })

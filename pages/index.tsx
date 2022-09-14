@@ -1,65 +1,103 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import useSWR from 'swr'
+import styles from 'styled-components'
 
-import styles from '@/pages/index.module.css'
+interface Exchange {
+  id: string
+  name: string
+  image: string
+  year_established: number
+  country: string
+  trust_score: string
+  trade_volume_24h_btc: number
+}
+
+const CardsContainer = styles.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 10px;
+`
+
+const Card = styles.div`
+  width: 300px;
+  height: 200px;
+  /*text-align: center;*/
+  box-shadow: 2px 2px 4px;
+  margin: 40px;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  // background-color: #8ac690;
+  // color: #ffd9fb;
+`
 
 export default function Home() {
+  const { data, error } = useSWR<Exchange[]>(
+    'https://api.coingecko.com/api/v3/exchanges/?per_page=100&page=1',
+    async (path: string) => {
+      return await fetch(path).then((res) => res.json())
+    }
+  )
+
+  console.log(data)
+
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
-        <title>Create Next App</title>
+        <title>IGTI React Mod4Des</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <main style={{ margin: '0 200px' }}>
+        <h1>IGTI React Module 4: Challenge</h1>
 
-        <p className={styles.description}>
-          Get started by editing <code>pages/index.js</code>
-        </p>
+        <input placeholder="Search by name" />
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+        {data ? (
+          <CardsContainer>
+            {data.map((e) => (
+              <Card key={e.id}>
+                <div style={{ display: 'flex' }}>
+                  <Image src={e.image} width={50} height={50} />
+                  <h3 style={{ marginLeft: 10 }}>{e.name}</h3>
+                </div>
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div>
+                    <label htmlFor={`score-${e.id}`}>Trust Score: </label>
+                    <code id={`score-${e.id}`}>{e.trust_score}</code>
+                  </div>
+                  <div>
+                    <label htmlFor={`volume-${e.id}`}>
+                      Trade Volume (24h):{' '}
+                    </label>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+                    <code id={`volume-${e.id}`}>
+                      {e.trade_volume_24h_btc.toFixed(2)}
+                    </code>
+                  </div>
+                  <div>
+                    <label htmlFor={`year-${e.id}`}>Year: </label>
 
-          <a href="https://vercel.com/new" className={styles.card}>
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+                    <code id={`year-${e.id}`}>{e.year_established}</code>
+                  </div>
+                  <div>
+                    <label htmlFor={`country-${e.id}`}>Country: </label>
+
+                    <code id={`country-${e.id}`}>{e.country}</code>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </CardsContainer>
+        ) : (
+          <div>Loading...</div>
+        )}
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   )
 }
