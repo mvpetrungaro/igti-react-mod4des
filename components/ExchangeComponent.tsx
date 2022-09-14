@@ -1,31 +1,33 @@
-import Image from "next/image";
-import { useState } from "react";
-import Exchange from "../models/Exchange";
+import Image from 'next/image'
+import { useState } from 'react'
+import Exchange from '../models/Exchange'
 
 type ExchangeProps = {
-  data: Exchange;
-};
+  data: Exchange
+}
 
 export default function ExchangeComponent({ data }: ExchangeProps) {
-  const [imageSrc, setImageSrc] = useState(data.image);
+  const [imageSrc, setImageSrc] = useState(data.image)
 
   return (
     <>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: 'flex' }}>
         <Image
-          src={imageSrc}
+          src={
+            imageSrc.startsWith('http') ? imageSrc : '/no-image-available.png'
+          }
           width={50}
           height={50}
           placeholder="blur"
           blurDataURL="/no-image-available.png"
           onError={() => {
-            setImageSrc("/no-image-available.png");
+            setImageSrc('/no-image-available.png')
           }}
         />
         <h3 style={{ marginLeft: 10 }}>{data.name}</h3>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div>
           <label htmlFor={`score-${data.id}`}>Trust Score: </label>
           <code id={`score-${data.id}`}>{data.trust_score}</code>
@@ -49,5 +51,5 @@ export default function ExchangeComponent({ data }: ExchangeProps) {
         </div>
       </div>
     </>
-  );
+  )
 }
